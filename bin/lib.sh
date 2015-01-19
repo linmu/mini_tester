@@ -30,7 +30,7 @@ function loginfo()
 function failExit()
 {
     loginfo "Error: $1, exited, please check problem"
-	exit $FUNC_ERROR
+    exit $FUNC_ERROR
 }
 
 #input: ftpaddress ftpfile destpath tmpfile
@@ -38,28 +38,28 @@ function ftpDownload()
 {
     if [[ $# -ne 4 ]];then
         loginfo "need params"
-	    failExit "ftpDownload invalid params [$*]"
-	fi
+	failExit "ftpDownload invalid params [$*]"
+    fi
 	
-	loginfo "start ftpDownload, params length:$#, params [$*]"
-	loginfo "wget -t $RETRY_DOWNLOAD_COUNT -P $3 -o $4"
-	wget -t $RETRY_DOWNLOAD_COUNT -P $3 -o $4 "$1/$2"
+    loginfo "start ftpDownload, params length:$#, params [$*]"
+    loginfo "wget -t $RETRY_DOWNLOAD_COUNT -P $3 -o $4"
+    wget -t $RETRY_DOWNLOAD_COUNT -P $3 -o $4 "$1/$2"
 
-	local wgetRet=$?
-	local noSuchFileRet=$(cat $4 | grep "No such file" | wc -l)
+    local wgetRet=$?
+    local noSuchFileRet=$(cat $4 | grep "No such file" | wc -l)
     rm -rf $4
-
-	loginfo "wget return=$wgetRet, no such file return=$noSuchFileRet"
-	if [[ $wgetRet -eq 0 && $noSuchFileRet -eq 0 ]];then
+    
+    loginfo "wget return=$wgetRet, no such file return=$noSuchFileRet"
+    if [[ $wgetRet -eq 0 && $noSuchFileRet -eq 0 ]];then
         loginfo "download $1/$2 success"
-		return $FUNC_SUCC
-	elif [[ $wgetRet -ne 0 && $noSuchFileRet -gt 0 ]];then
-	    loginfo "ftp addres $1 doesn't have file $2"
-		return $DOWNLOAD_NO_FILE
-	else
-		loginfo "download $1/$2 failed"
-		return $FUNC_ERROR
-	fi	
+	return $FUNC_SUCC
+    elif [[ $wgetRet -ne 0 && $noSuchFileRet -gt 0 ]];then
+	loginfo "ftp addres $1 doesn't have file $2"
+	return $DOWNLOAD_NO_FILE
+    else
+	loginfo "download $1/$2 failed"
+	return $FUNC_ERROR
+    fi	
 }
 
 #input: ftpaddress ftpfile destpath tmpfile
