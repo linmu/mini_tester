@@ -67,18 +67,18 @@ function getFilefromFtp()
 {
     if [[ $# -ne 4 ]];then
         loginfo "need params"
-	    failExit "getFilefromFtp invalid params [$*]"
-	fi
+	failExit "getFilefromFtp invalid params [$*]"
+    fi
 
-	loginfo "start wget file, params length:$#, params [$*]"
-	if [[ -f $3/$2 ]];then
+    loginfo "start wget file, params length:$#, params [$*]"
+    if [[ -f $3/$2 ]];then
         loginfo "$3/$2 is already here, delete it"
-		rm -rf "$3/$2"
-	fi
+        rm -rf "$3/$2"
+    fi
 
-	ftpDownload "$1" "$2" "$3" "$4"
-	local ftpRet=$?
-	[[ $ftpRet -eq $FUNC_SUCC ]] && return $FUNC_SUCC || return $ftpRet
+    ftpDownload "$1" "$2" "$3" "$4"
+    local ftpRet=$?
+    [[ $ftpRet -eq $FUNC_SUCC ]] && return $FUNC_SUCC || return $ftpRet
 }
 
 #input: datafile md5file
@@ -86,58 +86,57 @@ function compareMD5()
 {
     if [[ $# -ne 2 ]];then
         loginfo "need params"
-		failExit "compareMD5 invalid params [$*]"
-	fi
+	failExit "compareMD5 invalid params [$*]"
+    fi
 
-	loginfo "start compare md5 value, params length:$#, params [$*]"
-	if [[ ! -e $1 ]];then
-		loginfo "data file $1 doesn't exist"
-		return $FUNC_ERROR
-	fi
-	if [[ ! -e $2 ]];then
-		loginfo "md5 file $2 doesn't exist"
-		return $FUNC_ERROR
-	fi
+    loginfo "start compare md5 value, params length:$#, params [$*]"
+    if [[ ! -e $1 ]];then
+        loginfo "data file $1 doesn't exist"
+	return $FUNC_ERROR
+    fi
+    if [[ ! -e $2 ]];then
+        loginfo "md5 file $2 doesn't exist"
+	return $FUNC_ERROR
+    fi
 
-	local newMD5val=$(md5sum $1 | awk -F' ' '{print $1}')
-	local oldMD5val=$(awk -F' ' '{print $1}' $2)
+    local newMD5val=$(md5sum $1 | awk -F' ' '{print $1}')
+    local oldMD5val=$(awk -F' ' '{print $1}' $2)
     loginfo "data file md5:$newMD5val, md5 file md5:$oldMD5val"
 
-	local compareRet=$FUNC_SUCC
-	if [[ $newMD5val != $oldMD5val ]];then
+    local compareRet=$FUNC_SUCC
+    if [[ $newMD5val != $oldMD5val ]];then
         loginfo "compare MD5 value failed, data file md5:$newMD5val, md5 file md5:$oldMD5val"
-		compareRet=$FUNC_ERROR
-	else
-		loginfo "compare MD5 value success"
-	fi
+	compareRet=$FUNC_ERROR
+    else
+        loginfo "compare MD5 value success"
+    fi
 
-	return $compareRet
-
+    return $compareRet
 }
 
 function loopInvocation()
 {
     local ret=$FUNC_SUCC
-	local counter=1
-	for((counter=1;counter<=$LOOP_TEST_COUNT;counter++))
-	do
+    local counter=1
+    for((counter=1;counter<=$LOOP_TEST_COUNT;counter++))
+    do
         loginfo "start exec $1 $counter times"
-		$@
-		local callRet=$?
-		loginfo "call function [$1], return [$callRet]"
-		if [[ $callRet -eq $FUNC_SUCC ]];then
+	$@
+	local callRet=$?
+	loginfo "call function [$1], return [$callRet]"
+	if [[ $callRet -eq $FUNC_SUCC ]];then
             ret=$FUNC_SUCC
-			break
-		else
-			ret=$callRet
-		fi
+            break
+	else
+            ret=$callRet
+	fi
         if [[ $counter -lt $LOOP_TEST_COUNT ]];then
-				loginfo "loop invocation, sleep 2s"
-				sleep 2
-		fi
-	done
+            loginfo "loop invocation, sleep 2s"
+	    sleep 2
+	fi
+    done
 
-	return $ret
+    return $ret
 }
 
 #input: ftpaddress datafile md5file destpath tmpfile
@@ -145,24 +144,24 @@ function loopGetFileandCompareMD5()
 {
     if [[ $# -ne 5 ]];then
         loginfo "need params"
-		failExit "loopGetFileandCompareMD5 invalid params [$*]"
-	fi
+	failExit "loopGetFileandCompareMD5 invalid params [$*]"
+    fi
     
-	loopInvocation "getFilefromFtp $1 $2 $4 $5"
-	if [[ $? -ne $FUNC_SUCC ]];then
-		failExit "wget data file $2 failed"
-	fi
+    loopInvocation "getFilefromFtp $1 $2 $4 $5"
+    if [[ $? -ne $FUNC_SUCC ]];then
+        failExit "wget data file $2 failed"
+    fi
 
-	loopInvocation "getFilefromFtp $1 $3 $4 $5"
-	if [[ $? -ne $FUNC_SUCC ]];then
-		failExit "wget md5 file $3 failed"
-	fi
+    loopInvocation "getFilefromFtp $1 $3 $4 $5"
+    if [[ $? -ne $FUNC_SUCC ]];then
+        failExit "wget md5 file $3 failed"
+    fi
 
-	compareMD5 "$4/$2" "$4/$3"
-	local ret=$?
-	loginfo "call function [compareMD5 $2 $3], return [$ret]"
+    compareMD5 "$4/$2" "$4/$3"
+    local ret=$?
+    loginfo "call function [compareMD5 $2 $3], return [$ret]"
 
-	[[ $ret -eq $FUNC_SUCC ]] && return $FUNC_SUCC || return $FUNC_ERROR
+    [[ $ret -eq $FUNC_SUCC ]] && return $FUNC_SUCC || return $FUNC_ERROR
 }
 
 #input: requestURL response_result_file
@@ -170,26 +169,17 @@ function sendRequesttoHttpServer()
 {
     if [[ $# -ne 2 ]];then
         loginfo "need params"
-		failExit "sendRequesttoHttpServer invalid params [$*]"
-	fi
-
-	curl "$1" >> "$2" > /dev/null 2>&1
-	local curlRet=$?
+        failExit "sendRequesttoHttpServer invalid params [$*]"
+    fi
+    
+    curl "$1" >> "$2" > /dev/null 2>&1
+    local curlRet=$?
 	
-	if [[ $curlRet -eq $FUNC_SUCC ]];then
+    if [[ $curlRet -eq $FUNC_SUCC ]];then
         loginfo "send request $1 to server successfully"
-	else
-		failExit "send request $1 to server failed"
-	fi
+    else
+        failExit "send request $1 to server failed"
+    fi
 
-	return $curlRet
+    return $curlRet
 }
-
-
-
-
-
-
-
-
-

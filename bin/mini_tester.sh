@@ -45,88 +45,89 @@ source $BIN_DIR/lib.sh
 #input: http_server_name
 function startHttpServer()
 {
-    if [[ $# -ne 1 ]];then 
-	    loginfo "need params"
-	    failExit "startHttpServer invalid params [$*]"
-	fi
+    if [[ $# -ne 1 ]];then
+        loginfo "need params"
+	failExit "startHttpServer invalid params [$*]"
+    fi
 
-	cd $DEPLOY_DIR/$MUT_NAME
-	loginfo "starting $1 ..."
-	nohup ./$MUT_NAME >> $LOG_FILE > /dev/null 2>&1 &
+    cd $DEPLOY_DIR/$MUT_NAME
+    loginfo "starting $1 ..."
+    nohup ./$MUT_NAME >> $LOG_FILE > /dev/null 2>&1 &
+    sleep 2
 
-	sleep 2
-	PIDS=$(ps -ef | grep $MUT_NAME | grep -v "grep" | awk -F' ' '{print $2}')
-	local ret=$FUNC_SUCC
-	if [[ -z "$PIDS" ]];then
-		ret=$FUNC_ERROR
-	fi
+    PIDS=$(ps -ef | grep $MUT_NAME | grep -v "grep" | awk -F' ' '{print $2}')
+    local ret=$FUNC_SUCC
+    if [[ -z "$PIDS" ]];then
+        ret=$FUNC_ERROR
+    fi
 
-	return $ret
+    return $ret
 }
 
 #input: http_server_name
 function killHttpServer()
 {
     if [[ $# -ne 1 ]];then
-	    loginfo "need params"
-		failExit "killHttpServer ivalid params [$*]"
-	fi
+        loginfo "need params"
+	failExit "killHttpServer ivalid params [$*]"
+    fi
     
-	loginfo "begin to kill http server $1"
+    loginfo "begin to kill http server $1"
     ps -ef | grep "$1" | grep -v "grep" | awk -F' ' '{print $2}' | xargs -i kill -2 {}
     local ret=$?
     if [[ $ret -ne 0 ]];then
         failExit "kill $1 failed"
     else
-	    loginfo "kill $1 successfully"
-	fi
+	loginfo "kill $1 successfully"
+    fi
 
-	return $ret
+    return $ret
 }
 
 #input: http_server_name
 function deployAndstartHttpServer()
 {
     if [[ $# -ne 1 ]];then
-	    loginfo "need params"
-		failExit "deployAndstartHttpServer invalid params [$*]"
-	fi
+        loginfo "need params"
+	failExit "deployAndstartHttpServer invalid params [$*]"
+    fi
 
-	loginfo "look up if there already have process of $1"
-	local count=$(ps -ef | grep "$1" | grep -v "grep" | wc -l)
+    loginfo "look up if there already have process of $1"
+    local count=$(ps -ef | grep "$1" | grep -v "grep" | wc -l)
     if [[ $count -ne 0 ]];then
         loginfo "$1 has already started, kill $1"
-		killHttpServer "$1"
-	fi
+	killHttpServer "$1"
+    fi
 
-	loginfo "$1 is not started, begin to unzip package first ..."
-	cd $DEPLOY_DIR
-	if [[ -d $MUT_NAME ]];then
-	    loginfo "directory of $MUT_NAME has already exist, delete it"
-		rm -rf $MUT_NAME
-	fi
+    loginfo "$1 is not started, begin to unzip package first ..."
+    cd $DEPLOY_DIR
+    if [[ -d $MUT_NAME ]];then
+        loginfo "directory of $MUT_NAME has already exist, delete it"
+	rm -rf $MUT_NAME
+    fi
 
-	if [[ ! -e $MUT_FILE ]];then
-	    failExit "Packge $MUT_FILE doesn't exist"
-	fi
-	tar -xzvf $MUT_FILE > /dev/null 2>&1
-	cd $MUT_NAME
-	cp ./bin/$MUT_NAME .
+    if [[ ! -e $MUT_FILE ]];then
+        failExit "Packge $MUT_FILE doesn't exist"
+    fi
 
-	loginfo "begin to localize config file ..."
-	sed -i "s/^port:.*$/port: $PORT/g" ./conf/server.conf
-	sed -i "s/^data_path:.*$/data_path: \.\/data\/$DICT_FILE/g" ./conf/server.conf
+    tar -xzvf $MUT_FILE > /dev/null 2>&1
+    cd $MUT_NAME
+    cp ./bin/$MUT_NAME .
 
-	loopInvocation "startHttpServer $1"
-	ret=$?
-	if [[ $ret -ne $FUNC_SUCC ]];then
-	    loginfo "$1 start failed"
-	    ret=$FUNC_ERROR
-	else
-	    loginfo "$1 start successfully"
-	fi
+    loginfo "begin to localize config file ..."
+    sed -i "s/^port:.*$/port: $PORT/g" ./conf/server.conf
+    sed -i "s/^data_path:.*$/data_path: \.\/data\/$DICT_FILE/g" ./conf/server.conf
 
-	return $ret
+    loopInvocation "startHttpServer $1"
+    ret=$?
+    if [[ $ret -ne $FUNC_SUCC ]];then
+        loginfo "$1 start failed"
+	ret=$FUNC_ERROR
+    else
+	loginfo "$1 start successfully"
+    fi
+
+    return $ret
 }
 
 #input: query_dict_file response_result_file
@@ -134,18 +135,18 @@ function getResponsefromHttpServer()
 {
     if [[ $# -ne 2 ]];then
         loginfo "need params"
-		failExit "getResponsefromHttpServer invalid params [$*]"
-	fi
+	failExit "getResponsefromHttpServer invalid params [$*]"
+    fi
 
-	if [[ -e "$2" ]];then
+    if [[ -e "$2" ]];then
         loginfo "response result file $2 already exists, delete it"
-		rm -rf "$2"
-	fi
+	rm -rf "$2"
+    fi
 
-	while read line
-	do
+    while read line
+    do
         sendRequesttoHttpServer "http://$HOST:$PORT$line" "$2"
-	done < $1
+    done < $1
 }
 
 loginfo "++++++++++++++++++++++++++  auto test begin ++++++++++++++++++++++++++"
