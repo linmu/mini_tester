@@ -161,7 +161,7 @@ printMsg "begin to deploy and start the http server ..."
 deployAndstartHttpServer "$MUT_NAME"
 if [[ $? -ne $FUNC_SUCC ]];then
     printMsg "$MUT_NAME start failed"
-	failExit "$MUT_NAME start failed"
+    failExit "$MUT_NAME start failed"
 else
     printMsg "$MUT_NAME start successfully"
 fi
@@ -171,7 +171,7 @@ getResponsefromHttpServer "$QUERY_LIST_FILE" "$RESPONSE_RESULT_FILE"
 
 if [[ $? -ne $FUNC_SUCC ]];then
     printMsg "Send requests to http server failed"
-	failExit "Send requests to http server failed"
+    failExit "Send requests to http server failed"
 else
     printMsg "Send requests to http server done"
 fi
@@ -181,7 +181,7 @@ sleep 2
 killHttpServer "$MUT_NAME"
 if [[ $? -ne $FUNC_SUCC ]];then
     printMsg "kill $1 failed"
-	failExit "kill $1 failed"
+    failExit "kill $1 failed"
 else 
     printMsg "kill $1 successfully"
 fi
