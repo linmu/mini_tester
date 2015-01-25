@@ -90,7 +90,7 @@ function startHttpServer()
 {
     if [[ $# -ne 1 ]];then
         loginfo "need params"
-	    failExit "startHttpServer invalid params [$*]"
+	failExit "startHttpServer invalid params [$*]"
     fi
 
     cd $DEPLOY_DIR/$MUT_NAME
@@ -113,7 +113,7 @@ function killHttpServer()
 {
     if [[ $# -ne 1 ]];then
         loginfo "need params"
-	    failExit "killHttpServer ivalid params [$*]"
+	failExit "killHttpServer ivalid params [$*]"
     fi
     
     loginfo "begin to kill http server $1"
@@ -123,7 +123,7 @@ function killHttpServer()
     if [[ $ret -ne $FUNC_SUCC ]];then
         failExit "kill $1 failed"
     else
-	    loginfo "kill $1 successfully"
+	loginfo "kill $1 successfully"
     fi
 
     return $ret
@@ -134,21 +134,21 @@ function deployAndstartHttpServer()
 {
     if [[ $# -ne 1 ]];then
         loginfo "need params"
-	    failExit "deployAndstartHttpServer invalid params [$*]"
+	failExit "deployAndstartHttpServer invalid params [$*]"
     fi
 
     loginfo "look up if there already have process of $1"
     local count=$(ps -ef | grep "$1" | grep -v "grep" | wc -l)
     if [[ $count -ne 0 ]];then
         loginfo "$1 has already started, kill $1"
-	    killHttpServer "$1"
+	killHttpServer "$1"
     fi
 
     loginfo "$1 is not started, begin to unzip package first ..."
     cd "$DEPLOY_DIR"
     if [[ -d $MUT_NAME ]];then
         loginfo "directory of $MUT_NAME has already exist, delete it"
-	    rm -rf $MUT_NAME
+	rm -rf $MUT_NAME
     fi
 
     if [[ ! -e $MUT_FILE ]];then
@@ -167,9 +167,9 @@ function deployAndstartHttpServer()
     ret=$?
     if [[ $ret -ne $FUNC_SUCC ]];then
         loginfo "$1 start failed"
-	    ret=$FUNC_ERROR
+	ret=$FUNC_ERROR
     else
-	    loginfo "$1 start successfully"
+	loginfo "$1 start successfully"
     fi
 
     return $ret
@@ -180,12 +180,12 @@ function getResponsefromHttpServer()
 {
     if [[ $# -ne 2 ]];then
         loginfo "need params"
-	    failExit "getResponsefromHttpServer invalid params [$*]"
+	failExit "getResponsefromHttpServer invalid params [$*]"
     fi
 
     if [[ -e "$2" ]];then
         loginfo "response result file $2 already exists, delete it"
-	    rm -rf "$2"
+	rm -rf "$2"
     fi
 
     while read line
