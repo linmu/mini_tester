@@ -24,7 +24,7 @@ function usage()
 function usage_and_exit()
 {
     usage
-	exit $1
+    exit $1
 }
 
 function version()
@@ -41,18 +41,18 @@ while getopts :c:vh opt
 do
     case $opt in
 	c)   CONF_FILE_NAME=$OPTARG
-		 ;;
+             ;;
 	v)   version
-		 exit 0
-		 ;;
+	     exit 0
+             ;;
 	h)   usage_and_exit 0
-		 ;;
+	     ;;
 	':') echo "$PROGRAM -$OPTARG requires an argument" >&2
 	     usage_and_exit 1
 	     ;;
 	'?') echo "$PROGRAM: invalid option $OPTARG" >&2
 	     usage_and_exit 1
-		 ;;
+	     ;;
 	esac
 done
 shift $((OPTIND-1))
@@ -82,7 +82,7 @@ if [[ ! -d $LOG_PARSE_RESULT_DIR ]];then
     mkdir -p $PARSE_RESULT_DIR
 fi
 
-###### load public function #####i
+###### load public function #####
 source $BIN_DIR/lib.sh
 
 #input: http_server_name
