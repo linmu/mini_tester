@@ -28,7 +28,6 @@ BEGIN {
     #3. handle calculating succ rate
     COUNT++
     #get if succ
-    print $8
     if_succ = substr($8,index($8,"=") + 1)
     if(if_succ == 1) {
         succ_status["YES"]++
@@ -38,7 +37,6 @@ BEGIN {
     
     #4. handle calculating name_num
     #get name
-    print $11
     name = substr($11,index($11,"=") + 1)
     if(name != "") {
         name_record[name]++
