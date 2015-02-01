@@ -42,8 +42,8 @@ function ftpDownload()
     fi
 	
     loginfo "start ftpDownload, params length:$#, params [$*]"
-    loginfo "wget -t $RETRY_DOWNLOAD_COUNT -P $3 -o $4"
-    wget -t $RETRY_DOWNLOAD_COUNT -P $3 -o $4 "$1/$2"
+    loginfo "wget -t ${RETRY_DOWNLOAD_COUNT} -P $3 -o $4"
+    wget -t ${RETRY_DOWNLOAD_COUNT} -P $3 -o $4 "$1/$2"
 
     local wgetRet=$?
     local noSuchFileRet=$(cat $4 | grep "No such file" | wc -l)
@@ -55,7 +55,7 @@ function ftpDownload()
 	return $FUNC_SUCC
     elif [[ $wgetRet -ne 0 && $noSuchFileRet -gt 0 ]];then
 	loginfo "ftp addres $1 doesn't have file $2"
-	return $DOWNLOAD_NO_FILE
+	return ${DOWNLOAD_NO_FILE}
     else
 	loginfo "download $1/$2 failed"
 	return $FUNC_ERROR
@@ -130,7 +130,7 @@ function loopInvocation()
 	else
             ret=$callRet
 	fi
-        if [[ $counter -lt $LOOP_TEST_COUNT ]];then
+        if [[ $counter -lt ${LOOP_TEST_COUNT} ]];then
             loginfo "loop invocation, sleep 2s"
 	    sleep 2
 	fi
