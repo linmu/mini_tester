@@ -118,6 +118,13 @@ function killHttpServer()
     
     loginfo "begin to kill http server $1"
     ps -ef | grep "$1" | grep -v "grep" | awk -F' ' '{print $2}' | xargs -i kill -2 {}
+    sleep 2
+    local count=$(ps -ef | grep "$1" | grep -v "grep" | wc -l)
+    if [[ $count -ne 0 ]];then
+        loginfo "force to kill $1"
+        ps -ef | grep "$1" | grep -v "grep" | awk -F' ' '{print $2}' | xargs -i kill -9 {}
+    fi
+			
     local ret=$?
 
     if [[ $ret -ne $FUNC_SUCC ]];then
@@ -191,7 +198,7 @@ function getResponsefromHttpServer()
     while read line
     do
         sendRequesttoHttpServer "http://$HOST:$PORT$line" "$2"
-    done < $1
+    done < "$1"
 }
 
 #input: parser_awk_file server_log_file result_file
@@ -241,6 +248,8 @@ if [[ $? -ne $FUNC_SUCC ]];then
 else
     printMsg "${MUT_NAME} start successfully"
 fi
+
+sleep 2
 
 printMsg "Begin to send requests to the http server ..."
 getResponsefromHttpServer "${QUERY_LIST_FILE}" "${RESPONSE_RESULT_FILE}"
