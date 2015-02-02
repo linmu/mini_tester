@@ -118,7 +118,7 @@ function loopInvocation()
 {
     local ret=$FUNC_SUCC
     local counter=1
-    for((counter=1;counter<=$LOOP_TEST_COUNT;counter++))
+    for((counter=1;counter<=${LOOP_TEST_COUNT};counter++))
     do
         loginfo "start exec $1 $counter times"
 	$@
