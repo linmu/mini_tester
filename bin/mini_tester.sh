@@ -215,7 +215,11 @@ function parse_log()
 
     if [[ ! -e "$2" ]];then
         failExit "server log file doesn't exist"
-    fi 
+    fi
+    
+    if [[ -e "$3" ]];then
+        loginfo "parse result file $3 already exists, delete it"
+    fi
 
     cd "${BIN_DIR}"
     loginfo "begin to parse server log file, the result will be written to $3"
@@ -263,12 +267,12 @@ fi
 
 sleep 2
 
-killHttpServer "${MUT_NAME}"
+killHttpServer "${MUT_NAME}" > /dev/null 2>&1
 if [[ $? -ne $FUNC_SUCC ]];then
-    printMsg "kill $1 failed"
-    failExit "kill $1 failed"
+    printMsg "kill ${MUT_NAME} failed"
+    failExit "kill ${MUT_NAME} failed"
 else 
-    printMsg "kill $1 successfully"
+    printMsg "kill ${MUT_NAME} successfully"
 fi
 
 printMsg "Begin to parse server log file ..."
