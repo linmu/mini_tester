@@ -24,7 +24,7 @@ function printMsg()
 
 function loginfo()
 {
-    echo "`getTime` [`caller 0 | awk -F' ' '{print $1,$2}'`] $1" >> $LOG_FILE
+    echo "`getTime` [`caller 0 | awk -F' ' '{print $1,$2}'`] $1" >> ${LOG_FILE}
 }
 
 function failExit()
@@ -118,7 +118,7 @@ function loopInvocation()
 {
     local ret=$FUNC_SUCC
     local counter=1
-    for((counter=1;counter<=$LOOP_TEST_COUNT;counter++))
+    for((counter=1;counter<=${LOOP_TEST_COUNT};counter++))
     do
         loginfo "start exec $1 $counter times"
 	$@
@@ -171,8 +171,8 @@ function sendRequesttoHttpServer()
         loginfo "need params"
         failExit "sendRequesttoHttpServer invalid params [$*]"
     fi
-    
-    curl "$1" >> "$2" > /dev/null 2>&1
+   
+    curl -s "$1" >> "$2"
     local curlRet=$?
 	
     if [[ $curlRet -eq $FUNC_SUCC ]];then
